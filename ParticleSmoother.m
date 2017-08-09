@@ -164,6 +164,8 @@ sigs_f = zeros(4, nFrame);
 mus_fb = zeros(4, nFrame);
 sigs_fb = zeros(4, nFrame);
 
+mnpFrame = zeros(IMHEIGHT, IMWIDTH, 3, nFrame);
+
 tag = 0;
 for iFrame=1:nFrame
     tag = tag + 1;
@@ -212,6 +214,12 @@ for iFrame=1:nFrame
     tjd2Frame(:, :, :, iFrame) = lastFrame2;
     lastx2 = mx2;
     lasty2 = my2;
+    
+    
+    mnp = ind2rgb(imresize(vs(:, :, iFrame), [IMHEIGHT, IMWIDTH]), [0, 0, 0; 1, 1, 1]);
+    mnp = DrawBox(mnp, IMHEIGHT, IMWIDTH, mx2, my2, Rad/Height*IMHEIGHT, Rad/Width*IMWIDTH);
+    mnpFrame(:, :, :, iFrame) = mnp;
+    
 
     mu_f = zeros(4, 1);
     sig_f = zeros(4, 1);
@@ -238,9 +246,17 @@ close(hwb);
 
 close all;
 
-save('result_Smoother', 'mus_f', 'sigs_f', 'mus_fb', 'sigs_fb');
+% save('result_Smoother', 'mus_f', 'sigs_f', 'mus_fb', 'sigs_fb');
 
 % Display
+
+vAvg2 = VideoWriter('result_Avg2.avi', 'Uncompressed AVI');
+vAvg2.FrameRate = 30;
+open(vAvg2);
+
+vTjd2 = VideoWriter('result_Tjd2.avi', 'Uncompressed AVI');
+vTjd2.FrameRate = 30;
+open(vTjd2);
 
 set(gcf, 'position', [0 0 3*IMWIDTH 2*IMHEIGHT]);
 for iFrame=1:nFrame
@@ -250,9 +266,19 @@ for iFrame=1:nFrame
     imshow(impFrame(:, :, iFrame), []);
 %     subplot(2, 3, 3);
 %     imshow(impBFrame(:, :, iFrame), []);
+    subplot(2, 3, 4);
+    imshow(mnpFrame(:, :, :, iFrame));
+    frm = getframe;
+    writeVideo(vAvg2, frm);
     subplot(2, 3, 5);
     imshow(tjd1Frame(:, :, :, iFrame));
     subplot(2, 3, 6);
     imshow(tjd2Frame(:, :, :, iFrame));
+    frm = getframe;
+    writeVideo(vTjd2, frm);
+    
     pause(0.002);
 end
+
+close(vAvg2);
+close(vTjd2);

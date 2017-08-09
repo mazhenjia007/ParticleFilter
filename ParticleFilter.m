@@ -24,7 +24,7 @@ njss = Width / ds;
 llhFrame = zeros(niss, njss, nFrame);
 
 % #particles
-M = 1000;
+M = 5000;
 
 % [x1, x2, v1, v2] : x1 v1 in Height direction, x2 v2 in Width direction
 
@@ -140,19 +140,23 @@ end
 
 close(hwb);
 
-save('result', 'impFrame', 'llhFrame');
+save('result', 'impFrame', 'llhFrame', 'tjdFrame');
 
 close all;
 
 % Display
 
-vAvg = VideoWriter('result_Avg.avi', 'Uncompressed AVI');
-vAvg.FrameRate = 30;
-open(vAvg);
+vAvg1 = VideoWriter('result_Avg1.avi', 'Uncompressed AVI');
+vAvg1.FrameRate = 30;
+open(vAvg1);
 
 vMLE = VideoWriter('result_MLE.avi', 'Uncompressed AVI');
 vMLE.FrameRate = 30;
 open(vMLE);
+
+vTjd1 = VideoWriter('result_Tjd1.avi', 'Uncompressed AVI');
+vTjd1.FrameRate = 30;
+open(vTjd1);
 
 set(gcf, 'position', [0 0 2*IMWIDTH 3*IMHEIGHT]);
 for iFrame=1:nFrame
@@ -165,16 +169,19 @@ for iFrame=1:nFrame
     subplot(3, 2, 4);
     imshow(mnpFrame(:, :, :, iFrame));
     frm = getframe;
-    writeVideo(vAvg, frm);
+    writeVideo(vAvg1, frm);
     subplot(3, 2, 5);
     imshow(mleFrame(:, :, :, iFrame));
     frm = getframe;
     writeVideo(vMLE, frm);
     subplot(3, 2, 6);
     imshow(tjdFrame(:, :, :, iFrame));
+    frm = getframe;
+    writeVideo(vTjd1, frm);
     
     pause(0.002);
 end
 
-close(vAvg);
+close(vAvg1);
 close(vMLE);
+close(vTjd1);
